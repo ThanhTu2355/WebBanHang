@@ -23,10 +23,24 @@ namespace WebBanHang.Controllers
         }
 
         //Hiển thị danh sách sản phẩm
-        public IActionResult Index()
+        public IActionResult Index(int page = 1)
         {
-            var productList = _db.Products.Include(x => x.Category).ToList();
-            return View(productList);
+            int pageSize = 7;
+
+            var totalItems = _db.Products.Count();
+            var totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
+
+            var products = _db.Products
+                              .Include(x => x.Category)
+                              .OrderBy(p => p.CategoryId)
+                              .Skip((page - 1) * pageSize)
+                              .Take(pageSize)
+                              .ToList();
+
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = totalPages;
+
+            return View(products);
         }
 
         //Hiển thị form thêm sản phẩm mới
