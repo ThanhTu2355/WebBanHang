@@ -22,7 +22,7 @@ namespace WebBanHang.Controllers
             _hosting = hosting;
         }
 
-        //Hiển thị danh sách sản phẩm
+        //Hiển thị danh sách sản phẩm có phân trang
         public IActionResult Index(int page = 1)
         {
             int pageSize = 7;
@@ -59,7 +59,7 @@ namespace WebBanHang.Controllers
         [HttpPost]
         public IActionResult Add(Product product, IFormFile ImageUrl)
         {
-            if (ModelState.IsValid) //kiem tra hop le
+            if (ModelState.IsValid) //kiểm tra hợp lệ dữ liệu
             {
                 if (ImageUrl != null)
                 {
@@ -69,7 +69,7 @@ namespace WebBanHang.Controllers
                 //thêm product vào table Product
                 _db.Products.Add(product);
                 _db.SaveChanges();
-                TempData["success"] = "Product inserted success";
+                TempData["success"] = "Thêm sản phẩm thành công";
                 return RedirectToAction("Index");
             }
             ViewBag.CategoryList = _db.Categories.Select(x => new SelectListItem
@@ -84,12 +84,12 @@ namespace WebBanHang.Controllers
         [HttpPost]
         public IActionResult Update(Product product, IFormFile ImageUrl)
         {
-            if (ModelState.IsValid) //kiem tra hop le
+            if (ModelState.IsValid) //kiểm tra hợp lệ dữ liệu
             {
                 var existingProduct = _db.Products.Find(product.Id);
                 if (ImageUrl != null)
                 {
-                    //xu ly upload và lưu ảnh đại diện mới
+                    //xử lý upload và lưu ảnh đại diện mới
                     product.ImageUrl = SaveImage(ImageUrl);
                     //xóa ảnh cũ (nếu có)
                     if (!string.IsNullOrEmpty(existingProduct.ImageUrl))
@@ -112,7 +112,7 @@ namespace WebBanHang.Controllers
                 existingProduct.CategoryId = product.CategoryId;
                 existingProduct.ImageUrl = product.ImageUrl;
                 _db.SaveChanges();
-                TempData["success"] = "Product updated success";
+                TempData["success"] = "Cập nhật sản phẩm thành công";
                 return RedirectToAction("Index");
             }
             ViewBag.CategoryList = _db.Categories.Select(x => new SelectListItem
@@ -144,7 +144,7 @@ namespace WebBanHang.Controllers
         {
             //đặt lại tên file cần lưu
             var filename = Guid.NewGuid().ToString() + Path.GetExtension(image.FileName);
-            //lay duong dan luu tru wwwroot tren server
+            //lấy đường dẫn lưu trữ wwwroot trên server
             var path = Path.Combine(_hosting.WebRootPath, @"images/products");
             var saveFile = Path.Combine(path, filename);
             using (var filestream = new FileStream(saveFile, FileMode.Create))
@@ -182,11 +182,11 @@ namespace WebBanHang.Controllers
                     System.IO.File.Delete(oldFilePath);
                 }
             }
-            // xoa san pham khoi CSDL
+            // xóa sản phẩm khỏi CSDL
             _db.Products.Remove(product);
             _db.SaveChanges();
-            TempData["success"] = "Product deleted success";
-            //chuyen den action index
+            TempData["success"] = "Xóa sản phẩm thành công";
+            //chuyển đến trang index
             return RedirectToAction("Index");
         }
     }
