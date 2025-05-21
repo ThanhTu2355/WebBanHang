@@ -25,7 +25,7 @@ namespace WebBanHang.Controllers
         //Hiển thị danh sách sản phẩm có phân trang
         public IActionResult Index(int page = 1)
         {
-            int pageSize = 1;
+            int pageSize = 7;
             int offset = 2;
 
             var totalItems = _db.Products.Count();
