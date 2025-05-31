@@ -11,8 +11,9 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using WebBanHang.Models;
 
-namespace WebBanHang.Controllers
+namespace WebBanHang.Areas.Admin.Controllers
 {
+    [Area("Admin")]
     [Authorize(Roles = ShareData.Role_Admin)]
     public class ProductController : Controller
     {
