@@ -19,27 +19,66 @@ namespace WebBanHang.Areas.Customer.Controllers
             _db = db;
             _hosting = hosting;
         }
-        public IActionResult Index(int page = 1)
+        public IActionResult Index(int? categoryId = 1)
         {
-            int pageSize = 7;
-            int offset = 2;
+            List<Product> products;
+            if (categoryId.HasValue)
+            {
+                products = _db.Products.Where(p => p.CategoryId == categoryId.Value).ToList();
+            }
+            else
+            {
+                products = _db.Products.ToList();
+            }
+            var categories = _db.Categories.ToList();
+            var countProduct = _db.Products
+                                   .GroupBy(p => p.CategoryId)
+                                   .Select(g => new
+                                   {
+                                       CategoryId = g.Key,
+                                       Count = g.Count()
+                                   })
+                                   .ToDictionary(x => x.CategoryId, x => x.Count);
 
-            var totalItems = _db.Products.Count();
-            var totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
 
-            var products = _db.Products
-                              .Include(x => x.Category)
-                              .OrderBy(p => p.CategoryId)
-                              .Skip((page - 1) * pageSize)
-                              .Take(pageSize)
-                              .ToList();
+            ViewBag.Products = products;
+            ViewBag.Categories = categories;
+            ViewBag.SelectedCategoryId = categoryId;
+            ViewBag.CountProduct = countProduct;
 
-            ViewBag.CurrentPage = page;
-            ViewBag.TotalPages = totalPages;
-            ViewBag.from = Math.Max(1, page - offset);
-            ViewBag.to = Math.Min(totalPages, page + offset);
+            return View();
+        }
 
-            return View(products);
+        // Ajax: Lấy sản phẩm theo category
+        [HttpGet]
+        public IActionResult Ajax(int? categoryId = 1)
+        {
+            List<Product> products;
+            if (categoryId.HasValue)
+            {
+                products = _db.Products.Where(p => p.CategoryId == categoryId.Value).ToList();
+            }
+            else
+            {
+                products = _db.Products.ToList();
+            }
+            var categories = _db.Categories.ToList();
+            var countProduct = _db.Products
+                                   .GroupBy(p => p.CategoryId)
+                                   .Select(g => new
+                                   {
+                                       CategoryId = g.Key,
+                                       Count = g.Count()
+                                   })
+                                   .ToDictionary(x => x.CategoryId, x => x.Count);
+
+
+            ViewBag.Products = products;
+            ViewBag.Categories = categories;
+            ViewBag.SelectedCategoryId = categoryId;
+            ViewBag.CountProduct = countProduct;
+
+            return PartialView("_ProductListPartial", products);
         }
     }
 }
