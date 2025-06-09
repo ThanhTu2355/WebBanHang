@@ -7,7 +7,7 @@
         </div>
         @if(!string.IsNullOrEmpty(product.ImageUrl))
         {
-            <img src="@product.ImageUrl" class="card-img-top" alt="...">
+            <img src="/@product.ImageUrl" class="card-img-top" alt="...">
         }
         else
         {
@@ -18,7 +18,7 @@
 		}
         <div class="card-body">
             <a href="#" class="card-link btn btn-outline-secondary">Detail</a>
-            <a class="addtocart card-link btn btn-outline-info" data-productId="@product.Id" asp-action="AddToCart" asp-controller="Cart" asp-route-productId="@p.Id"> Add to cart </a>
+            <a class="addtocart card-link btn btn-outline-info" data-productId="@product.Id" asp-action="AddToCart" asp-controller="Cart" asp-route-productId="@product.Id"> Add to cart </a>
         </div>
         <div class="card-footer text-muted">
             2 days ago
